@@ -1,13 +1,18 @@
+import os
 import pandas as pd
 import pyodbc
+from dotenv import load_dotenv
+
+# بيقرا ملف .env ويحط قيمه كمتغيرات بيئة
+load_dotenv()
 
 # ===== 1. الاتصال بـ SQL Server =====
 conn = pyodbc.connect(
-    "DRIVER={ODBC Driver 18 for SQL Server};"
-    "SERVER=localhost,1433;"
-    "DATABASE=FDA_DW;"
-    "UID=sa;"
-    "PWD=YourStrong@Passw0rd;"
+    f"DRIVER={{{os.getenv('DB_DRIVER')}}};"
+    f"SERVER={os.getenv('DB_SERVER')};"
+    f"DATABASE={os.getenv('DB_NAME')};"
+    f"UID={os.getenv('DB_USER')};"
+    f"PWD={os.getenv('DB_PASSWORD')};"
     "TrustServerCertificate=yes;"
 )
 cur = conn.cursor()

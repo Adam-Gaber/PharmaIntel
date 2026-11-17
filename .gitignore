@@ -1,0 +1,16 @@
+# أسرار
+.env
+
+# بيئة بايثون
+.venv/
+__pycache__/
+*.pyc
+
+# الداتا (كبيرة ومش بتترفع)
+data/
+
+# ملفات مؤقتة
+.vscode/
+*.log
+spark-warehouse/
+metastore_db/

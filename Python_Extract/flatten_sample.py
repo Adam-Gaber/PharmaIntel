@@ -57,9 +57,13 @@ events_df["receivedate"] = pd.to_datetime(
     events_df["receivedate"], format="%Y%m%d", errors="coerce"
 )
 
-events_df["serious"] = events_df["serious"].map({"1": "Yes", "2": "No"}).fillna("Unknown")
+events_df["serious_flag"] = events_df["serious"].map({"1": 1, "2": 0})
 
-events_df["seriousnessdeath"] = events_df["seriousnessdeath"].map({"1": "Yes"}).fillna("No")
+events_df["death_flag"] = events_df["seriousnessdeath"].map({"1": 1}).fillna(0).astype(int)
+
+events_df = events_df.drop(columns=["serious", "seriousnessdeath"])
+
+events_df["reporter_country"] = events_df["reporter_country"].fillna("Unknown")
 
 events_df["patient_sex"] = events_df["patient_sex"].map({"1": "Male", "2": "Female", "0": "Unknown"}).fillna("Unknown")
 
@@ -79,6 +83,11 @@ events_df["patient_age_years"] = (
 ).round(1)
 
 events_df = events_df.drop(columns=["patient_age", "patient_age_unit"])
+
+events_df["patient_age_years"] = events_df["patient_age_years"].where(
+    events_df["patient_age_years"].between(0, 120)
+)
+
 age_bins = [0, 18, 35, 50, 65, 121]
 age_labels = ["0-17", "18-34", "35-49", "50-64", "65+"]
 
@@ -105,6 +114,8 @@ drugs_df = drugs_df.dropna(subset=["drug_name"])
 drugs_df["standard_drug_name"] = drugs_df["generic_name"].fillna(drugs_df["drug_name"])
 
 drugs_df["characterization"] = drugs_df["characterization"].map({"1": "Suspect", "2": "Concomitant", "3": "Interacting"}).fillna("Unknown")
+
+drugs_df["is_suspect"] = (drugs_df["characterization"] == "Suspect").astype(int)
 
 drugs_df["indication"] = (
     drugs_df["indication"]

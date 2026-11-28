@@ -14,7 +14,7 @@ SELECT dr.standard_drug_name, COUNT(*) AS serious_reports
 FROM dbo.fact_event_drug fd
 JOIN dbo.fact_adverse_event e ON fd.safetyreportid = e.safetyreportid
 JOIN dbo.dim_drug dr          ON fd.drug_id = dr.drug_id
-WHERE e.serious_flag = 1
+WHERE e.serious_flag = 1//
 GROUP BY dr.standard_drug_name
 ORDER BY serious_reports DESC;
 

@@ -16,7 +16,7 @@ BEGIN
 END;
 
 -- 2. إدخال البيانات بملء التواريخ يوم بيوم
-DECLARE @d DATE = '2000-01-01';
+DECLARE @d DATE = '1990-01-01';
 DECLARE @end DATE = '2026-12-31';
 
 WHILE @d <= @end

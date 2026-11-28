@@ -2,8 +2,12 @@ import json
 
 import pandas as pd
 
-with open("data/sample_5.json", "r", encoding="utf-8") as f:
-    records = json.load(f)
+INPUT_FILE = "data/raw/drug-event-0007-of-0018.json"
+
+with open(INPUT_FILE, "r", encoding="utf-8") as f:
+    data = json.load(f)
+
+records = data["results"]
 
 print("Records loaded:", len(records))
 
@@ -24,7 +28,7 @@ for record in records:
         "seriousnessdeath": record.get("seriousnessdeath"),
         "reporter_country": source.get("reportercountry"),
         "patient_sex": patient.get("patientsex"),
-        "patient_age": patient.get("patientonsetage"),
+        "patient_age": patient.get("patientonsetage"),     
         "patient_age_unit": patient.get("patientonsetageunit"),
     })
 
@@ -64,6 +68,7 @@ events_df["death_flag"] = events_df["seriousnessdeath"].map({"1": 1}).fillna(0).
 events_df = events_df.drop(columns=["serious", "seriousnessdeath"])
 
 events_df["reporter_country"] = events_df["reporter_country"].fillna("Unknown")
+events_df["reporter_country"] = events_df["reporter_country"].replace("COUNTRY NOT SPECIFIED", "Unknown")
 
 events_df["patient_sex"] = events_df["patient_sex"].map({"1": "Male", "2": "Female", "0": "Unknown"}).fillna("Unknown")
 
@@ -151,12 +156,16 @@ reactions_df = reactions_df.drop_duplicates(subset=["safetyreportid", "reaction"
 
 from pathlib import Path
 
-Path("data/clean").mkdir(parents=True, exist_ok=True)
+Path("data/clean_test").mkdir(parents=True, exist_ok=True)
 
-events_df.to_csv("data/clean/events.csv", index=False, encoding="utf-8", date_format="%Y-%m-%d")
-drugs_df.to_csv("data/clean/drugs.csv", index=False, encoding="utf-8")
-reactions_df.to_csv("data/clean/reactions.csv", index=False, encoding="utf-8")
+events_df.to_csv("data/clean_test/events.csv", index=False, encoding="utf-8", date_format="%Y-%m-%d")
+drugs_df.to_csv("data/clean_test/drugs.csv", index=False, encoding="utf-8")
+reactions_df.to_csv("data/clean_test/reactions.csv", index=False, encoding="utf-8")
 
 print(events_df)
 print(drugs_df)
 print(reactions_df)
+print("Rows:", len(events_df), len(drugs_df), len(reactions_df))
+print("Report ids unique:", events_df["safetyreportid"].is_unique)
+print("Max lengths:", drugs_df["drug_name"].str.len().max(), drugs_df["standard_drug_name"].str.len().max(), drugs_df["indication"].str.len().max(), reactions_df["reaction"].str.len().max())
+print("Countries:", events_df["reporter_country"].nunique())
